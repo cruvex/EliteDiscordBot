@@ -3,6 +3,7 @@ package com.cruvex;
 import com.cruvex.commands.AbstractCommand;
 import com.cruvex.commands.general.PingCommand;
 import com.cruvex.config.Config;
+import com.cruvex.eventlisteners.GuildEvents;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
@@ -45,6 +46,8 @@ public class EliteDiscordBot {
 
     static {
         logger = LoggerFactory.getLogger(EliteDiscordBot.class);
+
+        getEventListeners().add(new GuildEvents());
     }
 
     public EliteDiscordBot() throws LoginException {
