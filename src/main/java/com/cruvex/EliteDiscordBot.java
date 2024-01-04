@@ -1,6 +1,7 @@
 package com.cruvex;
 
 import com.cruvex.commands.AbstractCommand;
+import com.cruvex.commands.SlashCommandsManager;
 import com.cruvex.commands.call.CallLeaderboardCommand;
 import com.cruvex.commands.call.CallLogParserCommand;
 import com.cruvex.commands.call.CallsCommand;
@@ -100,6 +101,7 @@ public class EliteDiscordBot {
     }
 
     private void registerEventListeners() {
+        getJda().addEventListener(new SlashCommandsManager());
         getJda().addEventListener(new GuildEvents());
         getJda().addEventListener(new GuildVoiceJoinLeaveEvents());
     }
