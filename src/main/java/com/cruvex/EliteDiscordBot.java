@@ -1,6 +1,7 @@
 package com.cruvex;
 
 import com.cruvex.commands.AbstractCommand;
+import com.cruvex.commands.call.CallLogParserCommand;
 import com.cruvex.commands.general.PingCommand;
 import com.cruvex.config.Config;
 import com.cruvex.eventlisteners.GuildEvents;
@@ -95,6 +96,8 @@ public class EliteDiscordBot {
 
     private void registerCommands() {
         getCommandMap().put("ping", new PingCommand());
+        // Command only needed to be used once to parse #no-mic and insert all events into database
+        //getCommandMap().put("parse-logs", new CallLogParserCommand());
     }
 
     private void registerEventListeners() {
