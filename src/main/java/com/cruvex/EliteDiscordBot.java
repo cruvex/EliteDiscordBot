@@ -1,6 +1,7 @@
 package com.cruvex;
 
 import com.cruvex.commands.AbstractCommand;
+import com.cruvex.commands.call.CallLeaderboardCommand;
 import com.cruvex.commands.call.CallLogParserCommand;
 import com.cruvex.commands.call.CallsCommand;
 import com.cruvex.commands.general.PingCommand;
@@ -100,6 +101,7 @@ public class EliteDiscordBot {
         // Command only needed to be used once to parse #no-mic and insert all events into database
         //getCommandMap().put("parse-logs", new CallLogParserCommand());
         getCommandMap().put("calls", new CallsCommand());
+        getCommandMap().put("call-lb", new CallLeaderboardCommand());
     }
 
     private void registerEventListeners() {
