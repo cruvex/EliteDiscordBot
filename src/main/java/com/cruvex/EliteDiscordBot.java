@@ -35,8 +35,6 @@ public class EliteDiscordBot {
 
 
     public static @Getter HikariDataSource dataSource;
-    public static Connection conn;
-
 
     public static boolean intelliJ = false;
 
@@ -50,9 +48,6 @@ public class EliteDiscordBot {
 
     static {
         logger = LoggerFactory.getLogger(EliteDiscordBot.class);
-
-        getEventListeners().add(new GuildEvents());
-        getEventListeners().add(new GuildVoiceJoinLeaveEvents());
     }
 
     public EliteDiscordBot() throws LoginException {
@@ -105,10 +100,8 @@ public class EliteDiscordBot {
     }
 
     private void registerEventListeners() {
-        getEventListeners().forEach(eventListener -> {
-            logger.info("[EVENT-LISTENERS][REGISTER] " + eventListener.getClass().getSimpleName());
-            getJda().addEventListener(eventListener);
-        });
+        getJda().addEventListener(new GuildEvents());
+        getJda().addEventListener(new GuildVoiceJoinLeaveEvents());
     }
 
     private static boolean isRunningInIntelliJ(String[] args) {
