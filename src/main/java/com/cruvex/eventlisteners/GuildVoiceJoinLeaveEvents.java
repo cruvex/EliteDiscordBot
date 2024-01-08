@@ -30,12 +30,22 @@ public class GuildVoiceJoinLeaveEvents extends ListenerAdapter {
          * Switched Voice channel
          */
         else {
-            //voiceSwitchEvent(event);
+            voiceSwitchEvent(event);
         }
     }
 
     private void voiceJoinEvent(GuildVoiceUpdateEvent event) {
         log("[" + event.getGuild().getName() + "] User " + event.getMember().getEffectiveName() + " joined channel " + event.getChannelJoined().getName());
+
+        if (event.getChannelJoined().getId().equals(event.getGuild().getAfkChannel().getId())) {
+            event.getGuild().kickVoiceMember(event.getMember()).queue(
+                    success -> log("[" + event.getGuild().getName() + "] User " + event.getMember().getEffectiveName() + " kicked from channel " + event.getChannelJoined().getName()),
+                    error -> log("[" + event.getGuild().getName() + "] Failed to kick user " + event.getMember().getEffectiveName() + " from " + event.getChannelJoined().getName())
+            );
+
+            return;
+        }
+
         String userId = event.getMember().getId();
         String guildId = event.getGuild().getId();
         String channelId = event.getChannelJoined().getId();
@@ -59,11 +69,14 @@ public class GuildVoiceJoinLeaveEvents extends ListenerAdapter {
 
             event.getGuild().getTextChannelById("1127586150710792212").sendMessageEmbeds(embedBuilder.build()).queue();
         }
-
     }
 
     private void voiceLeaveEvent(GuildVoiceUpdateEvent event) {
+        if (event.getChannelJoined().getId().equals(event.getGuild().getAfkChannel().getId()))
+            return;
+
         log("[" + event.getGuild().getName() + "] User " + event.getMember().getEffectiveName() + " left channel " + event.getChannelLeft().getName());
+
         String userId = event.getEntity().getId();
         String guildId = event.getGuild().getId();
         String channelId = event.getChannelLeft().getId();
@@ -89,6 +102,9 @@ public class GuildVoiceJoinLeaveEvents extends ListenerAdapter {
     }
 
     private void voiceSwitchEvent(GuildVoiceUpdateEvent event) {
+        voiceJoinEvent(event);
+        voiceLeaveEvent(event);
+
         // send embed when user switches voiceChannel
         // To be properly implemented
         if (false) {
