@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.slf4j.Logger;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+
 /**
  * An abstract class representing a full command.
  */
@@ -23,6 +26,7 @@ public abstract class AbstractCommand {
     public final @Getter boolean isNSFW = false;
     public final @Getter Permission[] permissions = Permission.EMPTY_PERMISSIONS;
     public final @Getter OptionData optionData = null;
+    public final @Getter HashMap<String, Method> buttonInteractionsMap = null;
 
     protected void log(Object message) {
         logger.info("[SLASH-COMMANDS][" + this.getClass().getSimpleName() + "] " + message);
