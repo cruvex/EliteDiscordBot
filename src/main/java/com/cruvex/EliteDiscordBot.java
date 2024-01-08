@@ -3,7 +3,6 @@ package com.cruvex;
 import com.cruvex.commands.AbstractCommand;
 import com.cruvex.commands.SlashCommandsManager;
 import com.cruvex.commands.call.CallLeaderboardCommand;
-import com.cruvex.commands.call.CallLogParserCommand;
 import com.cruvex.commands.call.CallsCommand;
 import com.cruvex.commands.general.PingCommand;
 import com.cruvex.config.Config;
@@ -37,7 +36,7 @@ public class EliteDiscordBot {
 
     public static @Getter HikariDataSource dataSource;
 
-    public static boolean intelliJ = false;
+    public static @Getter boolean intelliJ = false;
 
     public static @Getter Config config;
 
@@ -125,7 +124,7 @@ public class EliteDiscordBot {
             hikariConfig.setUsername(config.getDataBaseUser());
             hikariConfig.setPassword(config.getDataBasePassword());
 
-            // Check how to set logger on hikariPool if possible?
+            //TODO Check how to set logger on hikariPool if possible?
             hikariConfig.addDataSourceProperty("dataSource.logger", "Slf4JLogger");
             hikariConfig.addDataSourceProperty("dataSource.logStatements", "true");
 
@@ -150,5 +149,15 @@ public class EliteDiscordBot {
             logger.error("[DB-CONNECTION] Error getting connection from pool: " + e.getMessage());
         }
         return connection;
+    }
+
+    public static void log(Object logMessage) {
+        String className = Thread.currentThread().getStackTrace()[2].getClassName();
+        logger.info("[" + className.substring(className.lastIndexOf('.') + 1) + "] " + logMessage);
+    }
+
+    public static void logSQL(Object logMessage) {
+        String className = Thread.currentThread().getStackTrace()[2].getClassName();
+        logger.info("[" + className.substring(className.lastIndexOf('.') + 1) + "][SQL] " + logMessage);
     }
 }
