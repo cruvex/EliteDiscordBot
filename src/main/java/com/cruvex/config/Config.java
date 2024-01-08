@@ -7,19 +7,24 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 
+import java.util.Objects;
 
+import static com.cruvex.EliteDiscordBot.log;
+
+
+@Setter
+@Getter
 public class Config {
-
-    final Logger logger = EliteDiscordBot.getLogger();
-
-    private @Getter @Setter String botToken;
+    private boolean development;
+    private String botToken;
 
     // Database config
-    private @Getter @Setter String dataBaseUrl;
-    private @Getter @Setter String dataBaseUser;
-    private @Getter @Setter String dataBasePassword;
+    private String dataBaseUrl;
+    private String dataBaseUser;
+    private String dataBasePassword;
 
     public Config(Boolean intelliJ) {
+        boolean _development;
         String _botToken;
         String _dataBaseUrl;
         String _dataBaseUser;
@@ -27,30 +32,34 @@ public class Config {
 
         try {
             if (intelliJ) {
-                logger.info("[CONFIG] Bot started in IntelliJ");
-                logger.info("[CONFIG] Getting Bot Token from .env file");
+                log("[CONFIG] Bot started in IntelliJ");
+                log("[CONFIG] Getting Bot Token from .env file");
 
                 Dotenv config = Dotenv.configure().load();
 
+                _development = config.get("DEV").equals("true");
                 _botToken = config.get("DEV_BOT_TOKEN");
                 _dataBaseUrl = "jdbc:" + config.get("DB_URL");
                 _dataBaseUser = config.get("DB_USER");
                 _dataBasePassword = config.get("DB_PASSWORD");
             } else {
-                logger.info("[CONFIG] Bot started outside of IntelliJ");
-                logger.info("[CONFIG] Getting Bot Token from environment variable 'BOT_TOKEN'");
+                log("[CONFIG] Bot started outside of IntelliJ");
+                log("[CONFIG] Getting Bot Token from environment variable 'BOT_TOKEN'");
+
+                _development = System.getenv("DEV").equals("true");
                 _botToken = System.getenv("BOT_TOKEN");
                 _dataBaseUrl = "jdbc:postgresql://" + System.getenv("PGHOST") + ":" + System.getenv("PGPORT") + "/" + System.getenv("PGDATABASE");
                 _dataBaseUser = System.getenv("PGUSER");
                 _dataBasePassword = System.getenv("PGPASSWORD");
             }
 
+            setDevelopment(_development);
             setBotToken(_botToken);
             setDataBaseUrl(_dataBaseUrl);
             setDataBaseUser(_dataBaseUser);
             setDataBasePassword(_dataBasePassword);
         } catch (Exception e) {
-            logger.info("[CONFIG][Exception] Failed to load environment variables: " + e.getMessage());
+            log("[CONFIG][Exception] Failed to load environment variables: " + e.getMessage());
         }
     }
 
