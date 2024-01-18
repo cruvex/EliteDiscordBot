@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.cruvex.EliteDiscordBot.logSQL;
+import static com.cruvex.EliteDiscordBot.*;
 
 
 @Getter
@@ -67,7 +67,7 @@ public class CallLeaderboardCommand extends AbstractCommand {
 
     public void onToggleModeButtonClicked(ButtonInteraction buttonInteraction) {
         Guild eventGuild = buttonInteraction.getGuild();
-        log("Executing onToggleModeButtonClicked button method");
+        info("Executing onToggleModeButtonClicked button method");
 
         String buttonMessageEmbedDescription = buttonInteraction.getMessage().getEmbeds().get(0).getDescription();
 
@@ -82,14 +82,14 @@ public class CallLeaderboardCommand extends AbstractCommand {
 
     public void onPrevPageButtonClicked(ButtonInteraction buttonInteraction) {
         Guild eventGuild = buttonInteraction.getGuild();
-        log("Executing onPrevPageButtonClicked button method");
+        info("Executing onPrevPageButtonClicked button method");
 
         String buttonMessageEmbedDescription = buttonInteraction.getMessage().getEmbeds().get(0).getDescription();
         CallLeaderboardCommandMode mode = getModeFromDescription(buttonMessageEmbedDescription);
 
         String buttonMessageEmbedFooter = buttonInteraction.getMessage().getEmbeds().get(0).getFooter().getText().replaceAll("Page ", "");
         buttonMessageEmbedFooter = buttonMessageEmbedFooter.substring(0, 1);
-        log("Page: " + buttonMessageEmbedFooter);
+        info("Page: " + buttonMessageEmbedFooter);
 
         buttonInteraction.editMessageEmbeds(getLeaderBoardEmbed(eventGuild, mode, isStaffChannel(buttonInteraction.getChannel()), Integer.parseInt(buttonMessageEmbedFooter) - 1).build())
                 .setActionRow(getButtonsForMode(mode, isStaffChannel(buttonInteraction.getChannel())))
@@ -98,14 +98,14 @@ public class CallLeaderboardCommand extends AbstractCommand {
 
     public void onNextPageButtonClicked(ButtonInteraction buttonInteraction) {
         Guild eventGuild = buttonInteraction.getGuild();
-        log("Executing onNextPageButtonClicked button method");
+        info("Executing onNextPageButtonClicked button method");
 
         String buttonMessageEmbedDescription = buttonInteraction.getMessage().getEmbeds().get(0).getDescription();
         CallLeaderboardCommandMode mode = getModeFromDescription(buttonMessageEmbedDescription);
 
         String buttonMessageEmbedFooter = buttonInteraction.getMessage().getEmbeds().get(0).getFooter().getText().replaceAll("Page ", "").trim();
         buttonMessageEmbedFooter = buttonMessageEmbedFooter.substring(0, 1);
-        log("Page: " + buttonMessageEmbedFooter);
+        info("Page: " + buttonMessageEmbedFooter);
 
         buttonInteraction.editMessageEmbeds(getLeaderBoardEmbed(eventGuild, mode, isStaffChannel(buttonInteraction.getChannel()), Integer.parseInt(buttonMessageEmbedFooter) + 1).build())
                 .setActionRow(getButtonsForMode(mode, isStaffChannel(buttonInteraction.getChannel())))
@@ -197,10 +197,10 @@ public class CallLeaderboardCommand extends AbstractCommand {
                 .limit(10)
                 .toList();
 
-        log("Page " + page + ": " + currentPage.size() + " users to show");
-        log("Total       : " + filteredLBEntries.size());
-        log("Current page: " + (1 + ((page - 1) * 10)) + " - " + (currentPage.size() + ((page - 1) * 10)));
-        log("Remaining   : " + (filteredLBEntries.size() - offset - 10));
+        info("Page " + page + ": " + currentPage.size() + " users to show");
+        info("Total       : " + filteredLBEntries.size());
+        info("Current page: " + (1 + ((page - 1) * 10)) + " - " + (currentPage.size() + ((page - 1) * 10)));
+        info("Remaining   : " + (filteredLBEntries.size() - offset - 10));
 
         hasNextPage = (filteredLBEntries.size() - offset - 10) > 0;
         hasPreviousPage = !page.equals(1);
@@ -209,7 +209,7 @@ public class CallLeaderboardCommand extends AbstractCommand {
         EmbedBuilder embed = new EmbedBuilder();
 
         embed.setTitle("Call leaderboard");
-        embed.setColor(Color.decode("#e2be43"));
+        embed.setColor(primaryColor);
 
         if (mode.equals(CallLeaderboardCommandMode.CURRENT_ELITES)) {
             embed.setDescription("leaderboard for current Elites\n");
@@ -244,10 +244,8 @@ public class CallLeaderboardCommand extends AbstractCommand {
                 if (Util.isEmptyOrNull(userName))
                     userName = user.getEffectiveName();
 
-                log(userName + " (" + lbEntry.getUserId() +"): " + Util.formatTime(lbEntry.getTotalTimeSpentInCall(), TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS));
+                info(userName + " (" + lbEntry.getUserId() +"): " + Util.formatTime(lbEntry.getTotalTimeSpentInCall(), TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS));
             }
-
-            log(lbEntry.getUserId() + ": is exElite -> " + exElites.contains(lbEntry.getUserId()));
 
             String fieldDescription =
                     "Total time  : " + Util.formatTime(lbEntry.getTotalTimeSpentInCall(), TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS) + "\n"
@@ -341,7 +339,7 @@ public class CallLeaderboardCommand extends AbstractCommand {
 
         Boolean isStaffChannel = staffChannels.contains(channel.getId());
 
-        log("isStaffChannel: " + isStaffChannel);
+        info("isStaffChannel: " + isStaffChannel);
         return isStaffChannel;
     }
 }
