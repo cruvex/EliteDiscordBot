@@ -23,6 +23,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cruvex.EliteDiscordBot.*;
+
 public class GuildEvents extends ListenerAdapter {
 
     final Logger logger = EliteDiscordBot.getLogger();
@@ -36,9 +38,9 @@ public class GuildEvents extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent event) {
-        log("Ready - Bot is currently in " + event.getJDA().getGuilds().size() + " guild(s)");
+        info("Ready - Bot is currently in " + event.getJDA().getGuilds().size() + " guild(s)");
         if (!event.getJDA().getGuilds().isEmpty()) {
-            log("Checking whitelisted guilds");
+            info("Checking whitelisted guilds");
             for (Guild guild : event.getJDA().getGuilds()) {
                 handleIsWhitelistedGuild(guild);
             }
@@ -54,7 +56,7 @@ public class GuildEvents extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
-        log("########## [GuildJoinEvent] ##########");
+        info("########## [GuildJoinEvent] ##########");
         Guild eventGuild = event.getGuild();
 
         handleIsWhitelistedGuild(eventGuild);
@@ -68,11 +70,11 @@ public class GuildEvents extends ListenerAdapter {
     private void registerCommandsOnGuild(Guild guild) {
         List<CommandData> commandData = new ArrayList<>();
         for (String commandName : EliteDiscordBot.getCommandMap().keySet()) {
-            log("[SLASH-COMMANDS][REGISTER][" + guild.getName() + "] Registering command '" + commandName + "'");
+            info("[SLASH-COMMANDS][REGISTER][" + guild.getName() + "] Registering command '" + commandName + "'");
             AbstractCommand command = EliteDiscordBot.commandMap.get(commandName);
 
             if (Util.isEmptyOrNull(command.getDescription())) {
-                logError("Description for command " + commandName + " is empty");
+                error("Description for command " + commandName + " is empty");
                 continue;
             }
 
@@ -87,7 +89,7 @@ public class GuildEvents extends ListenerAdapter {
 
             commandData.add(commandToAdd);
         }
-        log("[SLASH-COMMANDS][REGISTER][" + guild.getName() + "] Registered " + commandData.size() + " command(s)");
+        info("[SLASH-COMMANDS][REGISTER][" + guild.getName() + "] Registered " + commandData.size() + " command(s)");
         guild.updateCommands().addCommands(commandData).queue();
     }
 
@@ -110,9 +112,9 @@ public class GuildEvents extends ListenerAdapter {
             } catch (SQLException e) {
                 logger.error("Error getting whitelisted guilds from database: " + e.getMessage());
             }
-            log("Whitelisted guilds: " + String.join(", ", whitelistedGuilds));
+            info("Whitelisted guilds: " + String.join(", ", whitelistedGuilds));
         }
-        if (!whitelistedGuilds.contains(guild.getId())) {
+        if (!whitelistedGuilds.isEmpty() && !whitelistedGuilds.contains(guild.getId())) {
             EmbedBuilder embedBuilder = new EmbedBuilder();
 
             embedBuilder.setColor(0xFFCF76);
@@ -125,20 +127,8 @@ public class GuildEvents extends ListenerAdapter {
 
             guild.getSystemChannel().sendMessageEmbeds(embedBuilder.build()).queue();
 
-            log("Leaving guild " + guild.getName() + " (" + guild.getId() + ") as it is not whitelisted");
+            info("Leaving guild " + guild.getName() + " (" + guild.getId() + ") as it is not whitelisted");
             guild.leave().queue();
         }
-    }
-
-    private void log(String logMessage) {
-        logger.info("[" + this.getClass().getSimpleName() + "] " + logMessage);
-    }
-
-    private void logError(String logMessage) {
-        logger.error("[" + this.getClass().getSimpleName() + "] " + logMessage);
-    }
-
-    private void logSQL(String logMessage) {
-        logger.info("[" + this.getClass().getSimpleName() + "][SQL] " + logMessage);
     }
 }
