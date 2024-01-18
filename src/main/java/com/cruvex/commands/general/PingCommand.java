@@ -8,13 +8,15 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 
+import static com.cruvex.EliteDiscordBot.*;
+
 public class PingCommand extends AbstractCommand {
 
     // Attributes
     public final @Getter String description = "Measures and displays API latency and client latency.";
     @Override
     public void execute(SlashCommandInteraction slashCommandInteraction) {
-        log("executing");
+        info("executing");
 
         // Begin latency measurement
         OffsetDateTime timeCreated = slashCommandInteraction.getTimeCreated();

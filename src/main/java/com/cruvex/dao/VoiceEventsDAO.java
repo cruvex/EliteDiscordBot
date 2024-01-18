@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import static com.cruvex.EliteDiscordBot.logger;
+import static com.cruvex.EliteDiscordBot.*;
 
 public class VoiceEventsDAO {
 
@@ -27,7 +27,7 @@ public class VoiceEventsDAO {
 
     public static Boolean insertVoiceJoinLeaveEvent(String userId, String guildId, String channelId, String typeJoinLeave, long timeStamp) {
         if (!typeJoinLeave.equals(JOIN_EVENT) && !typeJoinLeave.equals(LEAVE_EVENT)) {
-            log("Tried to insert unknown JoinLeaveEvent: " + typeJoinLeave);
+            info("Tried to insert unknown JoinLeaveEvent: " + typeJoinLeave);
             return false;
         }
 
@@ -85,7 +85,7 @@ public class VoiceEventsDAO {
             if (!e.getMessage().equals("No results were returned by the query."))
                 logger.error("Error trying to add voice level : " + e.getMessage());
 
-            log(e.getMessage());
+            info(e.getMessage());
         }
         return result;
     }
@@ -121,12 +121,12 @@ public class VoiceEventsDAO {
 
                 userJoinLeaveEvents.add(new VoiceJoinLeaveEvent(guildId, userId,channelId, eventType, timestamp));
             }
-            log("");
+            info("");
         } catch (SQLException e) {
             if (!e.getMessage().equals("No results were returned by the query."))
                 logger.error("Error trying to add voice level : " + e.getMessage());
 
-            log(e.getMessage());
+            info(e.getMessage());
         }
         return result;
     }
@@ -174,13 +174,5 @@ public class VoiceEventsDAO {
             }
         }
         return null;
-    }
-
-    private static void log(String logMessage) {
-        logger.info("[VoiceEventsDAO] " + logMessage);
-    }
-
-    private static void logSQL(String logMessage) {
-        logger.info("[VoiceEventsDAO][SQL] " + logMessage);
     }
 }

@@ -1,15 +1,11 @@
 package com.cruvex.config;
 
-import com.cruvex.EliteDiscordBot;
 import com.cruvex.util.Util;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
 
-import java.util.Objects;
-
-import static com.cruvex.EliteDiscordBot.log;
+import static com.cruvex.EliteDiscordBot.info;
 
 
 @Setter
@@ -32,8 +28,8 @@ public class Config {
 
         try {
             if (intelliJ) {
-                log("[CONFIG] Bot started in IntelliJ");
-                log("[CONFIG] Getting Bot Token from .env file");
+                info("[CONFIG] Bot started in IntelliJ");
+                info("[CONFIG] Getting Bot Token from .env file");
 
                 Dotenv config = Dotenv.configure().load();
 
@@ -43,8 +39,8 @@ public class Config {
                 _dataBaseUser = config.get("DB_USER");
                 _dataBasePassword = config.get("DB_PASSWORD");
             } else {
-                log("[CONFIG] Bot started outside of IntelliJ");
-                log("[CONFIG] Getting Bot Token from environment variable 'BOT_TOKEN'");
+                info("[CONFIG] Bot started outside of IntelliJ");
+                info("[CONFIG] Getting Bot Token from environment variable 'BOT_TOKEN'");
 
                 _development = System.getenv("DEV").equals("true");
                 _botToken = System.getenv("BOT_TOKEN");
@@ -59,7 +55,7 @@ public class Config {
             setDataBaseUser(_dataBaseUser);
             setDataBasePassword(_dataBasePassword);
         } catch (Exception e) {
-            log("[CONFIG][Exception] Failed to load environment variables: " + e.getMessage());
+            info("[CONFIG][Exception] Failed to load environment variables: " + e.getMessage());
         }
     }
 

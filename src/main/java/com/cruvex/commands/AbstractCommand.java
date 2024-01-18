@@ -27,8 +27,4 @@ public abstract class AbstractCommand {
     public final @Getter Permission[] permissions = Permission.EMPTY_PERMISSIONS;
     public final @Getter OptionData optionData = null;
     public final @Getter HashMap<String, Method> buttonInteractionsMap = null;
-
-    protected void log(Object message) {
-        logger.info("[SLASH-COMMANDS][" + this.getClass().getSimpleName() + "] " + message);
-    }
 }
