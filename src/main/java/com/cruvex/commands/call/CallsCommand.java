@@ -1,5 +1,7 @@
 package com.cruvex.commands.call;
 
+import com.cruvex.EliteDiscordBot;
+import com.cruvex.util.EmbedUtil;
 import com.cruvex.util.Util;
 import com.cruvex.commands.AbstractCommand;
 import com.cruvex.database.tables.VoiceJoinLeaveEvent;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import static com.cruvex.EliteDiscordBot.*;
+
 import static com.cruvex.dao.VoiceEventsDAO.findLastJoinEvent;
 
 public class CallsCommand extends AbstractCommand {
@@ -33,22 +37,30 @@ public class CallsCommand extends AbstractCommand {
         Member targetMember = eventGuild.getMember(target);
 
         if (target.isBot()) {
-            log("Target user is bot.");
-            slashCommandInteraction.reply("Cannot get call info for bots!").setEphemeral(true).queue();
-            return;
+            warn("Target user is bot.");
+            throw new IllegalArgumentException("Cannot get call info for bots!");
         }
 
         if (Util.isEmptyOrNull(target)) {
-            slashCommandInteraction.reply("Something went wrong while trying to get the call info for this user").setEphemeral(true).queue();
-            return;
+            throw new IllegalStateException("Something went wrong while trying to get the call info for this user");
         }
 
         String guildId = slashCommandInteraction.getGuild().getId();
 
         ArrayList<VoiceJoinLeaveEvent> joinLeaveEvents = VoiceEventsDAO.getVoiceJoinLeaveEventsForUserInGuild(guildId, target.getId());
 
+        String userName = "";
+
+        if (!Util.isEmptyOrNull(targetMember))
+            userName = targetMember.getEffectiveName();
+
+        if (Util.isEmptyOrNull(userName))
+            userName = target.getEffectiveName();
+
         if (joinLeaveEvents.isEmpty()) {
-            slashCommandInteraction.reply("No call info found for this user!").setEphemeral(true).queue();
+            String message = "No call info found for user " + userName;
+            warn(message);
+            slashCommandInteraction.getHook().sendMessageEmbeds(EmbedUtil.getInfoEmbed(message)).queue();
             return;
         }
 
@@ -62,21 +74,10 @@ public class CallsCommand extends AbstractCommand {
 
         EmbedBuilder embed = new EmbedBuilder();
 
-        String userName = "";
-
-        if (!Util.isEmptyOrNull(targetMember))
-            userName = targetMember.getEffectiveName();
-
-        if (Util.isEmptyOrNull(userName))
-            userName = target.getEffectiveName();
-
         embed.setTitle("Call info for " + userName);
-        embed.setColor(Color.decode("#e2be43"));
+        embed.setColor(primaryColor);
         embed.setAuthor(target.getName(), null, eventGuild.getIconUrl());
 
-//        embed.setImage(target.getAvatarUrl());
-//        embed.setThumbnail(target.getAvatarUrl());
-//        embed.setThumbnail(target.getEffectiveAvatarUrl());
         embed.setImage(target.getEffectiveAvatarUrl());
 
         MessageEmbed.Field totalTimeField = new MessageEmbed.Field("Total Time" , Util.formatTime(totalTimeSpentInCall.stream().mapToLong(Long::longValue).sum(), TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS), true);
