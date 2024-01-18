@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 
 import java.time.Instant;
 
+import static com.cruvex.EliteDiscordBot.*;
+
 public class GuildVoiceJoinLeaveEvents extends ListenerAdapter {
 
     final Logger logger = EliteDiscordBot.getLogger();
@@ -35,12 +37,12 @@ public class GuildVoiceJoinLeaveEvents extends ListenerAdapter {
     }
 
     private void voiceJoinEvent(GuildVoiceUpdateEvent event) {
-        log("[" + event.getGuild().getName() + "] User " + event.getMember().getEffectiveName() + " joined channel " + event.getChannelJoined().getName());
+        info("[" + event.getGuild().getName() + "] User " + event.getMember().getEffectiveName() + " joined channel " + event.getChannelJoined().getName());
 
         if (event.getChannelJoined().getId().equals(event.getGuild().getAfkChannel().getId())) {
             event.getGuild().kickVoiceMember(event.getMember()).queue(
-                    success -> log("[" + event.getGuild().getName() + "] User " + event.getMember().getEffectiveName() + " kicked from channel " + event.getChannelJoined().getName()),
-                    error -> log("[" + event.getGuild().getName() + "] Failed to kick user " + event.getMember().getEffectiveName() + " from " + event.getChannelJoined().getName())
+                    success -> info("[" + event.getGuild().getName() + "] User " + event.getMember().getEffectiveName() + " kicked from channel " + event.getChannelJoined().getName()),
+                    error -> info("[" + event.getGuild().getName() + "] Failed to kick user " + event.getMember().getEffectiveName() + " from " + event.getChannelJoined().getName())
             );
 
             return;
@@ -72,10 +74,11 @@ public class GuildVoiceJoinLeaveEvents extends ListenerAdapter {
     }
 
     private void voiceLeaveEvent(GuildVoiceUpdateEvent event) {
-        if (event.getChannelJoined().getId().equals(event.getGuild().getAfkChannel().getId()))
-            return;
+        info("[" + event.getGuild().getName() + "] User " + event.getMember().getEffectiveName() + " left channel " + event.getChannelLeft().getName());
 
-        log("[" + event.getGuild().getName() + "] User " + event.getMember().getEffectiveName() + " left channel " + event.getChannelLeft().getName());
+        if (event.getChannelLeft().getId().equals(event.getGuild().getAfkChannel().getId())) {
+            return;
+        }
 
         String userId = event.getEntity().getId();
         String guildId = event.getGuild().getId();
@@ -102,8 +105,8 @@ public class GuildVoiceJoinLeaveEvents extends ListenerAdapter {
     }
 
     private void voiceSwitchEvent(GuildVoiceUpdateEvent event) {
-        voiceJoinEvent(event);
         voiceLeaveEvent(event);
+        voiceJoinEvent(event);
 
         // send embed when user switches voiceChannel
         // To be properly implemented
@@ -119,13 +122,5 @@ public class GuildVoiceJoinLeaveEvents extends ListenerAdapter {
 
             event.getGuild().getTextChannelById("1127586150710792212").sendMessageEmbeds(embedBuilder.build()).queue();
         }
-    }
-
-    private void log(String logMessage) {
-        logger.info("[VOICE-CHANNELS] " + logMessage);
-    }
-
-    private void logSQL(String logMessage) {
-        logger.info("[VOICE-CHANNELS][SQL] " + logMessage);
     }
 }
